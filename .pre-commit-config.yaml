@@ -53,3 +53,4 @@ repos:
         language: system
         entry: python -m br_pre_commit.src.check_no_object_annotations
         types: [python]
+        exclude: ^tests/

@@ -6,14 +6,16 @@ import pandas as pd
 def remove_overlapping_ranges(indexes: pd.MultiIndex) -> pd.MultiIndex:
     all_tfs = indexes.get_level_values("timeframe").unique().sort_values(key=pd.to_timedelta, ascending=False)
 
-    kept: list[pd.DataFrame] = []
+    kept: list[pd.MultiIndex] = []
 
     for tf in all_tfs:
         current = indexes[indexes.get_level_values("timeframe") == tf]
         dt = current.get_level_values("date")
 
         if kept:
-            larger: pd.DataFrame = pd.concat(kept)
+            larger: pd.MultiIndex = pd.MultiIndex.from_frame(
+                pd.concat([item.to_frame(index=False) for item in kept], ignore_index=True)
+            )
             larger_start = larger.get_level_values("date")
             larger_end = larger_start + pd.to_timedelta(larger.get_level_values("timeframe"))
 
@@ -27,4 +29,6 @@ def remove_overlapping_ranges(indexes: pd.MultiIndex) -> pd.MultiIndex:
         if len(current):
             kept.append(current)
 
-    return kept[0].append(kept[1:]) if kept else indexes[:0]
+    if not kept:
+        return indexes[:0]
+    return pd.MultiIndex.from_frame(pd.concat([item.to_frame(index=False) for item in kept], ignore_index=True))
