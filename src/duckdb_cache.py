@@ -1,13 +1,11 @@
 import functools
 import inspect
 from collections.abc import Callable
-from typing import Literal
+from typing import Any, Literal
 
 import pandas as pd
 import pandera.pandas as pa
 from br_py_log_n_profile import log_d, log_exception
-
-from config import app_config
 from helper.date_utils import (
     find_gaped_ranges,
     get_floor,
@@ -27,6 +25,8 @@ from infrastructure.datastore_engine.duckdb_cache_helpers import (
 from infrastructure.datastore_engine.duckdb_cache_registry import DatastoreRegistry
 from infrastructure.datastore_engine.iceberg_base import _write_gap, iceberg_fetch_from_datastore
 
+from config import app_config
+
 _DropNotCacheable = Callable[[pd.DataFrame], pd.DataFrame]
 
 
@@ -45,8 +45,8 @@ def _drop_not_finished_candles(df: pd.DataFrame) -> pd.DataFrame:
 def _assemble_final_result(
     cached_rows: pd.DataFrame,
     generated_frames: list[pd.DataFrame],
-    overall_start: object,
-    overall_end: object,
+    overall_start: pd.Timestamp,
+    overall_end: pd.Timestamp,
     post_fetch: PostFetch | None,
 ) -> pd.DataFrame:
     parts = [frame for frame in (cached_rows, *generated_frames) if not frame.empty]
@@ -101,7 +101,7 @@ def duckdb_cache(
         validated_generator = pa.check_types(lazy=True)(generator)
 
         @functools.wraps(generator)
-        def _wrapper(*args: object, **kwargs: object) -> pd.DataFrame:
+        def _wrapper(*args: Any, **kwargs: Any) -> pd.DataFrame:
             bound = signature.bind_partial(*args, **kwargs)
             bound.apply_defaults()
             requested_boundary = bound.arguments[boundary_arg]
@@ -208,8 +208,8 @@ def expand_range_to_cover_end_of_included_candles(time_range_st: str, effective_
 def _fetch_one_window(
     generator: Generator,
     signature: inspect.Signature,
-    args: tuple[object, ...],
-    kwargs: dict[str, object],
+    args: tuple[Any, ...],
+    kwargs: dict[str, Any],
     boundary_arg: str,
     window: str,
     # schema_model: type[pa.DataFrameModel],

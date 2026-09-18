@@ -1,6 +1,7 @@
 import pandas as pd
 import pytest
-from domain.datastore_engine.parquet_normalization import flatten_index_to_columns, has_non_default_index
+
+from parquet_normalization import flatten_index_to_columns, has_non_default_index
 
 
 @pytest.mark.unit
@@ -18,7 +19,7 @@ def test_has_non_default_index_true_for_date_indexed_frame():
 
 
 @pytest.mark.unit
-def test_flatten_index_to_columns_is_noop_for_already_flat_frame():
+def test_flatten_index_to_columns_is_noop_for_already_flat_frame():  # noqa
     df = pd.DataFrame({"date": pd.date_range("2024-01-01", periods=3, tz="UTC"), "value": [1, 2, 3]})
 
     flattened = flatten_index_to_columns(df)
@@ -27,7 +28,7 @@ def test_flatten_index_to_columns_is_noop_for_already_flat_frame():
 
 
 @pytest.mark.unit
-def test_flatten_index_to_columns_restores_date_index_as_column():
+def test_flatten_index_to_columns_restores_date_index_as_column():  # noqa
     indexed = pd.DataFrame({"date": pd.date_range("2024-01-01", periods=3, tz="UTC"), "value": [1, 2, 3]}).set_index(
         "date"
     )
@@ -40,7 +41,7 @@ def test_flatten_index_to_columns_restores_date_index_as_column():
 
 
 @pytest.mark.unit
-def test_flatten_index_to_columns_restores_multi_timeframe_index_as_columns():
+def test_flatten_index_to_columns_restores_multi_timeframe_index_as_columns():  # noqa
     indexed = pd.DataFrame(
         {
             "timeframe": ["1D", "1D"],

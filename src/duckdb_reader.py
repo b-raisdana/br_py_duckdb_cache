@@ -3,9 +3,9 @@ from pathlib import Path
 
 import duckdb
 import pandas as pd
+from infrastructure.datastore_engine.dataframe_indexing import add_timeframe_index, index_by_date
 
 from helper.pandera import pandera_validate
-from infrastructure.datastore_engine.dataframe_indexing import add_timeframe_index, index_by_date
 
 """
 DuckDB-backed batched read for the windowed cache (read_file_windowed()).

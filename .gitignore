@@ -1,0 +1,36 @@
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# IDE
+.idea/
+.vscode/
+
+# Python virtual envs
+/venv/
+/venv*/
+/.testvenv/
+/.testvenv*/
+/testvenv/
+/testvenv*/
+
+# Python bytecode / cache
+**/__pycache__/
+*.py[cod]
+*$py.class
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ipynb_checkpoints/
+*.egg-info/
+.coverage
+
+# Secrets / local config
+.env
+
+# Logs
+*.log
+/logs/
+
+# Data (whole tree ignored; plots/archive are subfolders of it)
+/data/

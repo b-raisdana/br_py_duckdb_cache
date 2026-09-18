@@ -1,0 +1,55 @@
+ci:
+  autofix_commits: true
+  autoupdate_schedule: monthly
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: debug-statements
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.2
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: pytest-fast
+        name: pytest unit gate
+        language: system
+        entry: python -m pytest -q -m unit
+        pass_filenames: false
+        files: ^(src/.*\.py|tests/.*\.py|pyproject\.toml)$
+
+  - repo: local
+    hooks:
+      - id: sync-skill-files
+        name: sync skill files
+        language: system
+        entry: python -m br_pre_commit.src.sync_skills
+        pass_filenames: false
+        files: SKILL\.md
+      - id: incremental-ratchet
+        name: incremental ratchet
+        language: system
+        entry: python -m br_pre_commit.src.ratchet
+        pass_filenames: false
+        files: ^src/.*\.py$
+      - id: no-object-annotations
+        name: no object type annotations
+        language: system
+        entry: python -m br_pre_commit.src.check_no_object_annotations
+        types: [python]

@@ -1,0 +1,6 @@
+[submodule "br_pre_commit"]
+	path = br_pre_commit
+	url = git@github.com:b-raisdana/br_pre_commit.git
+[submodule "br_pypi_publisher"]
+	path = br_pypi_publisher
+	url = git@github.com:b-raisdana/br_pypi_publisher.git

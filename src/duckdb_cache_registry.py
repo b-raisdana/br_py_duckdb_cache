@@ -1,7 +1,8 @@
 from enum import auto
 
-from config import app_config
 from helper.enum_utils import AutoSnakeEnum
+
+from config import app_config
 
 
 class DatastoreRegistry(AutoSnakeEnum):

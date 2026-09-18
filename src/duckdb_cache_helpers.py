@@ -6,12 +6,12 @@ from typing import get_args, get_type_hints
 import pandas as pd
 import pandera.pandas as pa
 from br_py_log_n_profile import log_d, log_e, log_i
+from iceberg_base import iceberg_fetch_from_datastore
 
-from config import BASE_TIMEFRAME
+from duckdb_cache_registry import DatastoreRegistry
 from helper.pandera import pandera_validate
-from infrastructure.datastore_engine.duckdb_cache_registry import DatastoreRegistry
-from infrastructure.datastore_engine.iceberg_base import iceberg_fetch_from_datastore
 
+BASE_TIMEFRAME = "1m"
 Generator = Callable[..., pd.DataFrame]  # type: ignore[explicit-any]
 
 PostFetch = Callable[[pd.DataFrame], pd.DataFrame]
