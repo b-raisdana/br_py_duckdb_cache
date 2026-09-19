@@ -86,6 +86,7 @@ line-growth-slack = 5
 complexity-ranks = "ABCDEF"
 xenon-max-absolute = "B"
 exclude-dir = "archive_not_used_trash"
+baseline-dir = ".br_pre_commit/ratchet"
 
 [tool.br_pre_commit.backup]
 full_backup_exclude_dir_regex = '^(data|logs|archive_not_used_trash|\.[^/]+)$'
