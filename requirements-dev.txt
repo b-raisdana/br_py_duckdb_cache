@@ -9,3 +9,5 @@ ruff>=0.6,<1.0.0
 mypy>=1.11,<2.0.0
 types-requests>=2.31,<3.0.0
 radon
+build>=1.0        # python -m build
+twine>=4.0        # python -m twine upload
