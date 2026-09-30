@@ -97,6 +97,41 @@ if has_non_default_index(df):
     df = flatten_index_to_columns(df)
 ```
 
+#### `pandera_validate` — output dumping
+
+`dump_output=True` writes what a validated function returned to disk, so a surprising frame can be opened and compared instead of guessed. Off by default; validation behaviour is identical either way.
+
+```python
+from helper.pandera import pandera_validate
+
+
+@pandera_validate(allow_pandas_dataframe=True, dump_output=True)
+def load(*, symbol: str) -> pd.DataFrame:
+    ...
+```
+
+Files are content-addressed: every name ends with a 7-character CRC-32 of the bytes written, so the same output reuses one file while a changed output lands beside the previous version.
+
+| Returned value | Files written |
+|----------------|---------------|
+| one DataFrame / 1-D or 2-D ndarray | `src.app.model.load.<hash>.parquet` |
+| class method | `src.app.model.Loader=load.<hash>.parquet` |
+| tuple / list / dict | `...<path>.<hash>.parquet` per frame, plus one `.json` describing the whole output |
+
+Nested paths use dict keys and 1-based tuple/list indices: a frame inside `{"d": {"f": (x, y, frame)}}` is dumped as `src.app.model.load.d=f=3.<hash>.parquet` and referenced from the JSON as `{"output_dump_reference": {"parquet": "...", "type": "DataFrame", "shape": [3, 2]}}`. The JSON never holds frame data.
+
+The folder defaults to `<git root of the decorated function's file>/logs/output_dump/`, so a PyPI install dumps into the importing project — never into `site-packages` and never relative to the process working directory. Override it once at start-up:
+
+```python
+from helper import configure_pandera_dump_folder
+
+configure_pandera_dump_folder("var/debug_frames")  # relative -> <git root>/var/debug_frames
+configure_pandera_dump_folder("/var/tmp/frames")    # absolute -> used as is
+configure_pandera_dump_folder(None)                 # back to the default
+```
+
+The folder is created on first use. A dumping failure (unwritable path, a frame no Parquet encoder accepts) is logged and swallowed, so debugging never changes what the function returns or raises.
+
 ### Registry
 
 `DatastoreRegistry` defines named storage namespaces derived from configuration (market, symbol, exchange):
@@ -172,7 +207,11 @@ src/
 ├── config/               # Runtime configuration (Pydantic)
 │   └── Config.py
 ├── helper/               # Shared helpers
-│   └── pandera.py        # Pandera validation decorator
+│   ├── pandera.py        # Pandera validation decorator
+│   ├── output_dump.py    # Content-addressed dumping of decorated-function output
+│   ├── dump_folder.py    # Dump folder configuration
+│   ├── content_hash.py   # 7-character content hashes for dump names
+│   └── repo_root.py      # Git root detection for the decorated function
 ├── duckdb_cache.py       # Main caching decorator
 ├── duckdb_cache_helpers.py  # Schema/model helper utilities
 ├── duckdb_cache_registry.py # Datastore namespace registry

@@ -19,6 +19,7 @@ from br_py_log_n_profile import log_d, log_w
 
 from config import app_config
 from helper.importer import NOT_TESTED
+from helper.output_dump import dump_function_output
 
 Pandera_DFM_Type = TypeVar("Pandera_DFM_Type", bound=pa.DataFrameModel)
 _WARN_INACTIVE_N_RETURN_CHECK_ENFORCEMENT: bool = False
@@ -250,6 +251,7 @@ def pandera_validate[**P, R](
     deep_nan_fill_scan: bool = ...,
     nan_fill_scan_depth: int = ...,
     extra_nan_fill_names: frozenset[str] = ...,
+    dump_output: bool = ...,
 ) -> Callable[P, R]: ...
 
 
@@ -264,6 +266,7 @@ def pandera_validate[**P, R](
     deep_nan_fill_scan: bool = ...,
     nan_fill_scan_depth: int = ...,
     extra_nan_fill_names: frozenset[str] = ...,
+    dump_output: bool = ...,
 ) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
 
 
@@ -277,10 +280,12 @@ def pandera_validate[**P, R](
     deep_nan_fill_scan: bool = False,
     nan_fill_scan_depth: int = 2,
     extra_nan_fill_names: frozenset[str] = frozenset(),
+    dump_output: bool = False,
 ) -> Callable[P, R] | Callable[[Callable[P, R]], Callable[P, R]]:
     """
     Runtime Pandera validation decorator. See app/helper/README.md for full docs
-    (decorator options, call-time kwargs, production bypass, exceptions).
+    (decorator options, call-time kwargs, production bypass, exceptions, and the
+    `dump_output` option backed by helper/output_dump.py).
     """
 
     def decorator(func: Callable[P, R]) -> Callable[P, R]:
@@ -329,23 +334,23 @@ def pandera_validate[**P, R](
                 call_kwargs["n_return"] = n_return_raw
 
             # call_kwargs is rewritten dynamically (n_return/allow_return_nan/
-            # discard_n_return popped and conditionally re-added), so it no
-            # longer matches _P.kwargs exactly from the type checker's view —
-            # this is the one unavoidable seam between ParamSpec preservation
-            # and runtime kwarg rewriting.
+            # discard_n_return popped and conditionally re-added), so it no longer
+            # matches _P.kwargs exactly: the one unavoidable seam between ParamSpec
+            # preservation and runtime kwarg rewriting.
             result: R = inner(*args, **call_kwargs)  # type: ignore[arg-type]
 
-            if not state.expect_n_return_enforcement:
-                return result
-
-            log_w(NOT_TESTED)
-            assert state.n_return_valid  # guaranteed by the raise above when enforcement_active
-            return _enforce_output(
-                result,
-                n_return=cast(int, n_return_raw),
-                trim_to_n_return=trim_to_n_return,
-                qualname=func_obj.__qualname__,
-            )
+            if state.expect_n_return_enforcement:
+                log_w(NOT_TESTED)
+                assert state.n_return_valid  # guaranteed by the raise above when enforcement_active
+                result = _enforce_output(
+                    result,
+                    n_return=cast(int, n_return_raw),
+                    trim_to_n_return=trim_to_n_return,
+                    qualname=func_obj.__qualname__,
+                )
+            if dump_output:
+                dump_function_output(func_obj, result)
+            return result
 
         return wrapper
 

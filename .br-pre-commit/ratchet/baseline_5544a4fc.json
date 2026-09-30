@@ -1,0 +1,6 @@
+{
+  "loc": 60,
+  "mypy:explicit-any": 14,
+  "mypy:misc": 1,
+  "mypy:unused-ignore": 3
+}
