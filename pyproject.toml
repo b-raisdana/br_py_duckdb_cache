@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "br-py-duckdb-cache"
-version = "0.5.0"
+version = "0.6.1"
 description = "DuckDB-backed windowed cache with Parquet/ZSTD storage, gap-aware regeneration, and Iceberg datastore integration"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -47,7 +47,7 @@ py-modules = [
     "duckdb_retention",
     "parquet_normalization",
 ]
-packages = ["config", "helper"]
+packages = ["config"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
