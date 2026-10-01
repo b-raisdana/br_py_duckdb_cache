@@ -8,8 +8,8 @@ import pandera.pandas as pa
 from br_py_log_n_profile import log_d, log_e, log_i
 from iceberg_base import iceberg_fetch_from_datastore
 
+from br_pre_commit import pandera_validate
 from duckdb_cache_registry import DatastoreRegistry
-from helper.pandera import pandera_validate
 
 BASE_TIMEFRAME = "1m"
 Generator = Callable[..., pd.DataFrame]  # type: ignore[explicit-any]

@@ -17,16 +17,15 @@ from types import ModuleType
 import pandas as pd
 import pytest
 
-from helper import configure_pandera_dump_folder
-from helper.content_hash import HASH_LENGTH, content_hash, is_content_hash
-from helper.dump_folder import configured_dump_folder
-from helper.output_dump import build_base_name, namespace_path
+from br_pre_commit.src.br_pandera.dump_folder import configure_pandera_dump_folder, configured_dump_folder
+from br_pre_commit.src.helper.content_hash import HASH_LENGTH, content_hash, is_content_hash
+from br_pre_commit.src.helper.output_dump import build_base_name, namespace_path
 
 SOURCE_HEADER = """\
 import numpy as np
 import pandas as pd
 
-from helper.pandera import pandera_validate
+from br_pre_commit import pandera_validate
 """
 _MODULE_IDS = itertools.count()
 _LIBRARY_ROOT = Path(__file__).resolve().parents[2]
@@ -317,7 +316,7 @@ def test_file_outside_any_repository_uses_its_own_directory(tmp_path: Path):
 
 @pytest.mark.unit
 def test_repo_root_detection_is_stable_across_calls(project: Path):
-    from helper.repo_root import find_repo_root
+    from br_pre_commit.src.helper.repo_root import find_repo_root
 
     first = find_repo_root(project / "src" / "app" / "model.py")
     second = find_repo_root(project / "src" / "app" / "model.py")

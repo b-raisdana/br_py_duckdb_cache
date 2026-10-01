@@ -5,7 +5,7 @@ import duckdb
 import pandas as pd
 from infrastructure.datastore_engine.dataframe_indexing import add_timeframe_index, index_by_date
 
-from helper.pandera import pandera_validate
+from br_pre_commit import pandera_validate
 
 """
 DuckDB-backed batched read for the windowed cache (read_file_windowed()).

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from helper.pandera import pandera_validate
+from br_pre_commit import pandera_validate
 
 """
 Pure DataFrame-shape check/fix behind infrastructure.datastore_engine.parquet_housekeeping's Parquet

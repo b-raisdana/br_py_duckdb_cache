@@ -5,6 +5,7 @@ gitpython>=3.1,<4.0.0
 pytest>=8.2,<9.0.0
 pytest-asyncio>=0.23,<1.0.0
 pytest-cov>=5.0,<6.0.0
+pytest-xdist>=3.6,<4.0.0  # required by "addopts = -n auto"
 ruff>=0.6,<1.0.0
 mypy>=1.11,<2.0.0
 types-requests>=2.31,<3.0.0

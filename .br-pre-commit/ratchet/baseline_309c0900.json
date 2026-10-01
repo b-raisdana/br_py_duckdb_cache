@@ -1,0 +1,5 @@
+{
+  "mypy:explicit-any": 7,
+  "mypy:misc": 1,
+  "mypy:untyped-decorator": 3
+}
